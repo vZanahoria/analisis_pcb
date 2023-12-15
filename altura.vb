@@ -3,7 +3,7 @@ Sub CopiarYTransponerColumnasParaTodosLosArchivosAltura()
     On Error Resume Next
 
     CarpetaOrigen = "C:\Users\reach\OneDrive\Escritorio\Tec Celaya\Septimo semestre\Introduccion Ciencia de Datos\PruebasAlgoritmos\Pruebas-100-Transformado\"
-
+    
     ' Abre el libro de destino (el libro al que deseas copiar)
     Dim LibroDestino As Workbook
     Set LibroDestino = Workbooks.Open("C:\Users\reach\OneDrive\Escritorio\Tec Celaya\Septimo semestre\Introduccion Ciencia de Datos\Pruebas\LibroDestino.xlsx")
@@ -45,11 +45,11 @@ Sub CopiarYTransponerColumnasParaTodosLosArchivosAltura()
             GoTo SiguienteArchivo
         End If
 
-        ' Especifica el rango de columnas que deseas copiar en el libro de origen (F:L desde la fila 10)
-        Set RangoOrigen = HojaOrigen.Range("F10:I" & HojaOrigen.Cells(HojaOrigen.Rows.Count, "F").End(xlUp).Row)
-
         ' Filtrar el rango para excluir las filas con "GLUE" o "GLUE1" en la columna F
-        RangoOrigen.AutoFilter Field:=1, Criteria1:="<>GLUE", Operator:=xlAnd, Criteria2:="<>GLUE1"
+        HojaOrigen.Range("F:F").AutoFilter Field:=1, Criteria1:="<>GLUE", Operator:=xlAnd, Criteria2:="<>GLUE1"
+
+        ' Especifica el rango de columnas que deseas copiar en el libro de origen (F:L desde la fila 10)
+        Set RangoOrigen = HojaOrigen.Range("F10:H" & HojaOrigen.Cells(HojaOrigen.Rows.Count, "F").End(xlUp).Row)
 
         ' Copia y transpone el contenido visible desde el rango de origen al rango de destino
         RangoOrigen.SpecialCells(xlCellTypeVisible).Copy
@@ -59,7 +59,6 @@ Sub CopiarYTransponerColumnasParaTodosLosArchivosAltura()
         HojaOrigen.AutoFilterMode = False
 
         ' Escribe el nombre del archivo en la primera columna del rango de destino
-        HojaDestino.Cells(HojaDestino.Rows.Count, 1).End(xlUp).Offset(1, 0).Value = Left(Archivo, InStrRev(Archivo, ".") - 1)
         HojaDestino.Cells(HojaDestino.Rows.Count, 1).End(xlUp).Offset(1, 0).Value = Left(Archivo, InStrRev(Archivo, ".") - 1)
         HojaDestino.Cells(HojaDestino.Rows.Count, 1).End(xlUp).Offset(1, 0).Value = Left(Archivo, InStrRev(Archivo, ".") - 1)
         HojaDestino.Cells(HojaDestino.Rows.Count, 1).End(xlUp).Offset(1, 0).Value = Left(Archivo, InStrRev(Archivo, ".") - 1)
@@ -76,3 +75,4 @@ SiguienteArchivo:
     LibroDestino.Close SaveChanges:=True
     Application.DisplayAlerts = True
 End Sub
+

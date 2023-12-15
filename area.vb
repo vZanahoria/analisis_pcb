@@ -1,4 +1,4 @@
-Sub CopiarYTransponerColumnasParaTodosLosArchivosArea()
+Sub CopiarYTransponerColumnasParaTodosLosArchivosVolumen()
     Application.DisplayAlerts = False
     On Error Resume Next
 
@@ -38,32 +38,29 @@ Sub CopiarYTransponerColumnasParaTodosLosArchivosArea()
             GoTo SiguienteArchivo
         End If
 
-        ' Especifica el rango de columnas que deseas copiar en el libro de origen (F:N desde la fila 10)
+        ' Filtrar el rango para excluir las filas con "GLUE" o "GLUE1" en la columna F
+        HojaOrigen.Range("F:F").AutoFilter Field:=1, Criteria1:="<>GLUE", Operator:=xlAnd, Criteria2:="<>GLUE1"
+
+        ' Encuentra la última fila utilizada en la hoja de destino
+        UltimaFila = HojaDestino.Cells(HojaDestino.Rows.Count, 2).End(xlUp).Row + 1
+
+        ' Especifica el rango de columnas que deseas copiar en el libro de origen (F, G, M desde la fila 10)
         Set RangoOrigen = Union(HojaOrigen.Range("F10:F" & HojaOrigen.Cells(HojaOrigen.Rows.Count, "F").End(xlUp).Row), _
                                 HojaOrigen.Range("G10:G" & HojaOrigen.Cells(HojaOrigen.Rows.Count, "G").End(xlUp).Row), _
-                                HojaOrigen.Range("M10:M" & HojaOrigen.Cells(HojaOrigen.Rows.Count, "M").End(xlUp).Row), _
-                                HojaOrigen.Range("N10:N" & HojaOrigen.Cells(HojaOrigen.Rows.Count, "N").End(xlUp).Row))
-       ' Encuentra la última fila utilizada en la hoja de destino
-        UltimaFila = HojaDestino.Cells(HojaDestino.Rows.Count, 2).End(xlUp).Row + 1
+                                HojaOrigen.Range("M10:M" & HojaOrigen.Cells(HojaOrigen.Rows.Count, "M").End(xlUp).Row))
 
         ' Especifica el rango de destino en el libro de destino
         Set RangoDestino = HojaDestino.Range("A" & UltimaFila).Resize(RangoOrigen.Columns.Count, RangoOrigen.Rows.Count)
 
-' Especifica el rango de columnas que deseas copiar en el libro de origen (F:L desde la fila 10)
-        Set RangoOrigen = HojaOrigen.Range("F10:I" & HojaOrigen.Cells(HojaOrigen.Rows.Count, "F").End(xlUp).Row)
-
-        ' Filtrar el rango para excluir las filas con "GLUE" o "GLUE1" en la columna F
-        RangoOrigen.AutoFilter Field:=1, Criteria1:="<>GLUE", Operator:=xlAnd, Criteria2:="<>GLUE1"
-
         ' Escribe el nombre del archivo en la primera columna del rango de destino
-        HojaDestino.Cells(HojaDestino.Rows.Count, 1).End(xlUp).Offset(1, 0).Value = Left(Archivo, InStrRev(Archivo, ".") - 1)
-        HojaDestino.Cells(HojaDestino.Rows.Count, 1).End(xlUp).Offset(1, 0).Value = Left(Archivo, InStrRev(Archivo, ".") - 1)
-        HojaDestino.Cells(HojaDestino.Rows.Count, 1).End(xlUp).Offset(1, 0).Value = Left(Archivo, InStrRev(Archivo, ".") - 1)
         HojaDestino.Cells(HojaDestino.Rows.Count, 1).End(xlUp).Offset(1, 0).Value = Left(Archivo, InStrRev(Archivo, ".") - 1)
 
         ' Copia y transpone el contenido desde el rango de origen al rango de destino
         RangoOrigen.Copy
         RangoDestino.Cells(1, 2).Resize(RangoOrigen.Rows.Count, RangoOrigen.Columns.Count).PasteSpecial Paste:=xlPasteAll, Operation:=xlNone, SkipBlanks:=False, Transpose:=True
+
+        ' Desactivar el filtro
+        HojaOrigen.AutoFilterMode = False
 
         ' Cierra el libro de origen sin guardar cambios
         LibroOrigen.Close SaveChanges:=False
@@ -77,6 +74,3 @@ SiguienteArchivo:
     LibroDestino.Close SaveChanges:=True
     Application.DisplayAlerts = True
 End Sub
-   
-
-
